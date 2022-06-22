@@ -2,20 +2,13 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
+    RewriteEngine On    
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^(.*)$ /public/$1 
-
-    # Send Requests To Front Controller...
+    RewriteRule ^ %1 [L,R=301]
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(/)?$ public/index.php [L] 
+    RewriteRule ^ index.php [L]
 </IfModule>
