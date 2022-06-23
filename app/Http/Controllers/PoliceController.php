@@ -56,16 +56,16 @@ class PoliceController extends Controller
             if (!$this->validatePhotos($request->photos)) {
                 return back()->with('error', "detector de fotos invalidas");
             }
-            
+            //creamos en la bd los datos del policia
             $postRef = $this->database ->getReference($this->tablename)->push($postData);
 
             if($postRef){
-               // $postData =
+               // obteniendo el id de
                 $id = Str::afterLast($postRef, 'police/');error_log($id );  
                         
                     $this->createCollectionAws('police');
                     $pathSavePhoto = $this->savePhotos($request->photos, $id);
-                    $arrayIndexFaces = $this->getIndexFaces($request->photos);
+                    $arrayIndexFaces = $this->getIndexFaces($request->photos,$id);
                     
                     if (count($pathSavePhoto) == count($arrayIndexFaces)) {
                         $i = 0;
@@ -181,18 +181,18 @@ class PoliceController extends Controller
         return $path;
     }
 
-    private function getIndexFaces($photos)
+    private function getIndexFaces($photos,$id)
     {
         $arrayIndexFace = [];
         foreach ($photos as $photo) {
             $imageBase64 = $this->getImage($photo);
-            $result = $this->indexFaceAws($imageBase64);
+            $result = $this->indexFaceAws($imageBase64,$id);
             array_push($arrayIndexFace, $result);
         }
         return $arrayIndexFace;
     }
 
-    private function indexFaceAws($imageBase64)
+    private function indexFaceAws($imageBase64,$id)
     {
         $client = new RekognitionClient(
             [
@@ -203,7 +203,7 @@ class PoliceController extends Controller
         $result = $client->indexFaces([
             'CollectionId' => 'police',
             'DetectionAttributes' => [],
-            'ExternalImageId' => '1',
+            'ExternalImageId' => $id,
             "MaxFaces" => 1,
             'Image' => [
                 'Bytes' => $imageBase64,
