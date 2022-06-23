@@ -1,2 +1,2 @@
-cp /home/site/wwwroot/default /etc/nginx/sites-enabled/default
-service nginx reload
+echo `cp /home/site/wwwroot/default /etc/nginx/sites-enabled/default`
+echo `service nginx reload`
