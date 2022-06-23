@@ -8,11 +8,11 @@
         <div class="col-md-11 pt-4 m-auto">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">
+                    <div class="card-title" style="margin-right: 80%;">
                         Gestionar Policias
                     </div>
                     <div class="card-toolbar">
-                        <a href="{{ route('police.create') }}" class="btn btn-primary btn-sm"> Crear</a>
+                        <a href="{{ route('police.create') }}" class="btn btn-primary btn-sm"> Nuevo</a>
                     </div>
                 </div>
                 <div class="card-body">

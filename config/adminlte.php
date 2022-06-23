@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'FakePolice',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -45,8 +45,8 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo' => '<b>Fake</b>Police',
+    'logo_img' => 'vendor\logo.jpg',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -226,15 +226,15 @@ return [
 
     'menu' => [
 
-        ['header' => 'account_settings'],
+        ['header' => 'Administración'],
 
         [
-            'text' => 'Gestionar policia',
+            'text' => 'Gestionar Policía',
             'url'  => '/police',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
-            'text' => 'Gestionar unidad policial',
+            'text' => 'Gestionar Unidad Policial',
             'url'  => '/police-unit',
             'icon' => 'fas fa-fw fa-user',
         ],

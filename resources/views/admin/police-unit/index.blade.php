@@ -8,11 +8,11 @@
         <div class="col-md-11 pt-4 m-auto">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">
-                        Gestionar Policias
+                    <div class="card-title" style="margin-right: 70%;">
+                        Gestionar Unidades Policiales
                     </div>
                     <div class="card-toolbar">
-                        <a href="{{ route('police-unit.create') }}" class="btn btn-primary btn-sm"> Crear</a>
+                        <a href="{{ route('police-unit.create') }}" class="btn btn-primary btn-sm"> Nuevo</a>
                     </div>
                 </div>
                 <div class="card-body">

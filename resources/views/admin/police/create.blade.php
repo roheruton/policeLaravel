@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
-                        Crear Policia
+                        Registrar Policia
                     </div>
                 </div>
                 <div class="card-body">
