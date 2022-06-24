@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Aws\Rekognition\RekognitionClient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+//use Illuminate\Http\Client\Request;
 
 class DetectingFaceController extends Controller
 {
@@ -21,50 +22,49 @@ class DetectingFaceController extends Controller
         return view('admin.prueba');
     }
     public function detectedFaceImage(Request $request) 
-    {  
-        ////////////////////////////////////////////////
+    {  if($request!=null):
+            ////////////////////////////////////////////////
+            //$img =$this->getImage($request);
+            $img = $request->image64;
+            ///validar si en la foto recibida hay un rostro
+            $bounding="";
+            $faces=$this->validatePhotos($img);
+                if (count($faces['FaceDetails'])>1 ||count($faces['FaceDetails'])<=0 ) {
+                    return response()->json(
+                        ["data" => "Foto inválida, es posible que haya mas de un rostro o ningún rostro"],
+                        Response::HTTP_BAD_REQUEST);
+                }
 
-        error_log('Pruebaaa1');
-      /*  $path = $request->file('image')->getPathname();
-        $path = $request->getPathname();
-        $image= fopen($path,'r');
-        $img = fread($image, filesize($path));
-        fclose($image);*/
-        $img =$this->getImage($request);
-       
-        error_log('Pruebaaa2');
-        ///validar si en la foto recibida hay un rostro
-        $bounding="";
-        $faces=$this->validatePhotos($img);
-            if (count($faces['FaceDetails'])>1 ||count($faces['FaceDetails'])<=0 ) {
-                return response()->json(
-                    ["message" => "Foto inválida, es posible que haya mas de un rostro o ningún rostro"],
-                    Response::HTTP_BAD_REQUEST);
+            
+            $resultado = $this->listFaces($img);
+                error_log($resultado);
+        /////////////////////////////////////////////
+            if (count($resultado["FaceMatches"]) > 0) {
+                $policeID=$resultado['FaceMatches'][0]['Face']['ExternalImageId'];
+                $confidence= $resultado['FaceMatches'][0]['Face']['Confidence'];            
+                $bounding=  $faces['FaceDetails'][0]['BoundingBox'];
+                $policeInfo =$this->database
+                                    ->getReference('police/'.$policeID)
+                                    ->getValue();
+                $resultado= [
+                        'id'=>$policeID,
+                        'confidence'=>$confidence,
+                        'bounding' =>$bounding,
+                        'info'=>$policeInfo
+                ];
+                        
+                return response()->json(["data" => $resultado]);
             }
+            return response()->json(
+                ["data" => "no se encontró coincidencia"],
+                Response::HTTP_BAD_REQUEST);
+        else:
+            return response()->json(
+                ["data" => "no se recibió imagen!"],
+                 Response::HTTP_BAD_REQUEST);
+            
+        endif;
 
-        
-        $resultado = $this->listFaces($img);
-            error_log($resultado);
-    /////////////////////////////////////////////
-        if (count($resultado["FaceMatches"]) > 0) {
-            $policeID=$resultado['FaceMatches'][0]['Face']['ExternalImageId'];
-            $confidence= $resultado['FaceMatches'][0]['Face']['Confidence'];            
-            $bounding=  $faces['FaceDetails'][0]['BoundingBox'];
-            $policeInfo =$this->database
-                                ->getReference('police/'.$policeID)
-                                ->getValue();
-            $resultado= [
-                    'id'=>$policeID,
-                    'confidence'=>$confidence,
-                    'bounding' =>$bounding,
-                    'info'=>$policeInfo
-            ];
-                    
-            return response()->json(["data" => $resultado]);
-        }
-        return response()->json(
-            ["message" => "no se encontro"],
-             Response::HTTP_BAD_REQUEST);
     }
 
 
