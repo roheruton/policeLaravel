@@ -19,4 +19,4 @@ use Illuminate\Support\Facades\Route;
     return $request->user();
 });*/
 //Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage']);
-Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage']);
+//Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage']);

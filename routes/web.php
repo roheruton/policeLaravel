@@ -22,6 +22,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage'])->name('prueba.detectedFace');
+Route::post('api/prueba', [DetectingFaceController::class, 'detectedFaceImage']);
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -35,4 +38,3 @@ Route::resource('/police-unit', PoliceUnitController::class);
 Route::post('/police',[PoliceController::class,'store2'])->name('police.store2');
 
 Route::get('/prueba', [DetectingFaceController::class, 'index'])->name('prueba.index');
-Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage'])->name('prueba.detectedFace');
