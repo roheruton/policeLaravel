@@ -38,4 +38,4 @@ Route::resource('/police', PoliceController::class);
 Route::resource('/police-unit', PoliceUnitController::class);
 Route::post('/police',[PoliceController::class,'store2'])->name('police.store2');
 
-Route::get('/prueba', [DetectingFaceController::class, 'index'])->name('prueba.index');
+//Route::get('/prueba', [DetectingFaceController::class, 'index'])->name('prueba.index');
