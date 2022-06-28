@@ -22,7 +22,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/prueba', [DetectingFaceController::class, 'detectedFaceImage'])->name('prueba.detectedFace');
+Route::post('/prueba1', [DetectingFaceController::class, 'detectedFaceImage'])->name('prueba.detectedFace');
 Route::post('/prueba2', [DetectingFaceController::class, 'detectedFaceImage']);
 Route::post('/prueba3', 'DetectingFaceController@detectedFaceImage');
 Route::post('/prueba4', 'DetectingFaceController@prueba.detectedFace');
@@ -39,4 +39,4 @@ Route::resource('/police', PoliceController::class);
 Route::resource('/police-unit', PoliceUnitController::class);
 Route::post('/police',[PoliceController::class,'store2'])->name('police.store2');
 
-//Route::get('/prueba', [DetectingFaceController::class, 'index'])->name('prueba.index');
+Route::get('/prueba', [DetectingFaceController::class, 'index'])->name('prueba.index');

@@ -1,5 +1,5 @@
 
-@section('content')
+
     <div class="card">
         <div class="card-body">
             <form action="{{ route('prueba.detectedFace') }}" method="post" enctype="multipart/form-data">
@@ -10,4 +10,4 @@
             </form>
         </div>
     </div>
-@endsection
+
