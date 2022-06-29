@@ -24,8 +24,6 @@ Route::get('/', function () {
 
 Route::post('/prueba1', [DetectingFaceController::class, 'detectedFaceImage'])->name('prueba.detectedFace');
 Route::post('/prueba2', [DetectingFaceController::class, 'detectedFaceImage']);
-Route::post('/prueba3', 'DetectingFaceController@detectedFaceImage');
-Route::post('/prueba4', 'DetectingFaceController@prueba.detectedFace');
 
 Auth::routes();
 

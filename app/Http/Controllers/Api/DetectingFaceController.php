@@ -15,6 +15,12 @@ class DetectingFaceController extends Controller
     {
         $this->endPoint = "https://sw-evento.s3.us-west-2.amazonaws.com/";
         $this->database = app('firebase.database');
+        $this-> client = new RekognitionClient(
+            [
+                'region' => env('AWS_DEFAULT_REGION', 'us-west-2'),
+                'version' => 'latest'
+            ]
+        );
     }
 
     public function index()
@@ -22,20 +28,15 @@ class DetectingFaceController extends Controller
         return view('admin.prueba');
     }
     public function detectedFaceImage(Request $request) 
-    {  if($request!=null):
+    {   
+        if ($request != null):
             ////////////////////////////////////////////////
-            //$img =$this->getImage($request);
-            $img = $request->image64;
-            ///validar si en la foto recibida hay un rostro
-            $bounding="";
-            $faces=$this->validatePhotos($img);
-                if (count($faces['FaceDetails'])>1 ||count($faces['FaceDetails'])<=0 ) {
-                    return response()->json(
-                        ["data" => "Foto inválida, es posible que haya mas de un rostro o ningún rostro"],
-                        Response::HTTP_BAD_REQUEST);
-                }
 
+            $img =$this->getImage($request);
+            //$img = $request->image64;
             
+            $bounding="";
+            $faces=$this->validatePhotos($img);            
             $resultado = $this->listFaces($img);
                 error_log($resultado);
         /////////////////////////////////////////////
@@ -60,7 +61,47 @@ class DetectingFaceController extends Controller
                 Response::HTTP_BAD_REQUEST);
         else:
             return response()->json(
-                ["data" => "no se recibió imagen!"],
+                $request,
+                 Response::HTTP_BAD_REQUEST);
+            
+        endif;
+    }
+
+    public function detectedFaceImage2(Request $request) 
+    {   
+        if ($request != null):
+            ////////////////////////////////////////////////
+
+            //$img =$this->getImage($request);
+            $img = $request->image64;
+            ///validar si en la foto recibida hay un rostro
+            $bounding="";
+            $faces=$this->validatePhotos($img);            
+            $resultado = $this->listFaces($img);
+                error_log($resultado);
+        /////////////////////////////////////////////
+            if (count($resultado["FaceMatches"]) > 0) {
+                $policeID=$resultado['FaceMatches'][0]['Face']['ExternalImageId'];
+                $confidence= $resultado['FaceMatches'][0]['Face']['Confidence'];            
+                $bounding=  $faces['FaceDetails'][0]['BoundingBox'];
+                $policeInfo =$this->database
+                                    ->getReference('police/'.$policeID)
+                                    ->getValue();
+                $resultado= [
+                        'id'=>$policeID,
+                        'confidence'=>$confidence,
+                        'bounding' =>$bounding,
+                        'info'=>$policeInfo
+                ];
+                        
+                return response()->json(["data" => $resultado]);
+            }
+            return response()->json(
+                ["data" => "no se encontró coincidencia"],
+                Response::HTTP_BAD_REQUEST);
+        else:
+            return response()->json(
+                $request,
                  Response::HTTP_BAD_REQUEST);
             
         endif;
@@ -70,14 +111,9 @@ class DetectingFaceController extends Controller
 
     private function listFaces($imagebytes)
     {
-        $client = new RekognitionClient(
-            [
-                'region' => env('AWS_DEFAULT_REGION', 'us-west-2'),
-                'version' => 'latest'
-            ]
-        );
+        
 
-        $result = $client->searchFacesByImage([
+        $result = $this->client->searchFacesByImage([
             'CollectionId' => 'police', // REQUIRED
             'MaxFaces' => 3,
             'Image' => [
@@ -118,7 +154,7 @@ class DetectingFaceController extends Controller
     }
     public function getImage($photo)
     {
-        $imagePath =$photo-> file('image')->getPathname();
+        $imagePath =$photo->file('image')->getPathname();
         $fp_image = fopen($imagePath, 'r');
         $image = fread($fp_image, filesize($imagePath));
         fclose($fp_image);
