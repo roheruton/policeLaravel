@@ -15,4 +15,4 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(/)?$ public/index.php [L] 
-</IfModule>
+</IfModule> 
