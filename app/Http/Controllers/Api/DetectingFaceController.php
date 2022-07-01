@@ -30,16 +30,15 @@ class DetectingFaceController extends Controller
     public function detectedFaceImage(Request $request) 
     {   
         if ($request != null):
-            ////////////////////////////////////////////////
-
             $img =$this->getImage($request);
-            //$img = $request->image64;
-            
             $bounding="";
-            $faces=$this->validatePhotos($img);            
+            $faces=$this->validatePhotos($img); 
+          
+            if(empty($faces->FaceDetails)):
+                return response()->json(["data" => 'No se encontro rostros en la imagen enviada o hay mas de un rostro']);
+            else:                       
             $resultado = $this->listFaces($img);
-                error_log($resultado);
-        /////////////////////////////////////////////
+
             if (count($resultado["FaceMatches"]) > 0) {
                 $policeID=$resultado['FaceMatches'][0]['Face']['ExternalImageId'];
                 $confidence= $resultado['FaceMatches'][0]['Face']['Confidence'];            
@@ -59,60 +58,19 @@ class DetectingFaceController extends Controller
             return response()->json(
                 ["data" => "no se encontró coincidencia"],
                 Response::HTTP_BAD_REQUEST);
-        else:
+                
+            endif;
+        else: 
+            
             return response()->json(
                 $request,
                  Response::HTTP_BAD_REQUEST);
             
         endif;
     }
-
-    public function detectedFaceImage2(Request $request) 
-    {   
-        if ($request != null):
-            ////////////////////////////////////////////////
-
-            //$img =$this->getImage($request);
-            $img = $request->image64;
-            ///validar si en la foto recibida hay un rostro
-            $bounding="";
-            $faces=$this->validatePhotos($img);            
-            $resultado = $this->listFaces($img);
-                error_log($resultado);
-        /////////////////////////////////////////////
-            if (count($resultado["FaceMatches"]) > 0) {
-                $policeID=$resultado['FaceMatches'][0]['Face']['ExternalImageId'];
-                $confidence= $resultado['FaceMatches'][0]['Face']['Confidence'];            
-                $bounding=  $faces['FaceDetails'][0]['BoundingBox'];
-                $policeInfo =$this->database
-                                    ->getReference('police/'.$policeID)
-                                    ->getValue();
-                $resultado= [
-                        'id'=>$policeID,
-                        'confidence'=>$confidence,
-                        'bounding' =>$bounding,
-                        'info'=>$policeInfo
-                ];
-                        
-                return response()->json(["data" => $resultado]);
-            }
-            return response()->json(
-                ["data" => "no se encontró coincidencia"],
-                Response::HTTP_BAD_REQUEST);
-        else:
-            return response()->json(
-                $request,
-                 Response::HTTP_BAD_REQUEST);
-            
-        endif;
-
-    }
-
 
     private function listFaces($imagebytes)
     {
-        
-
         $result = $this->client->searchFacesByImage([
             'CollectionId' => 'police', // REQUIRED
             'MaxFaces' => 3,
@@ -126,14 +84,11 @@ class DetectingFaceController extends Controller
 
     private function validatePhotos($photo)
     {
-       // foreach ($photos as $photo) {
-            //$image = $this->getImage($photo);
             $result = $this->faceDetected($photo);
             if (count($result['FaceDetails']) > 1 || count($result['FaceDetails']) <= 0) {
                 return $result;
-            }
-            return $result;
-       // }
+            }else {
+            return $result;}
     }
 
     private function faceDetected($imageBase64)
@@ -154,12 +109,13 @@ class DetectingFaceController extends Controller
     }
     public function getImage($photo)
     {
-        $imagePath =$photo->file('image')->getPathname();
+        $imagePath =$photo->file('image')->getPathname();//error_log('sss'.$imagePath);
         $fp_image = fopen($imagePath, 'r');
         $image = fread($fp_image, filesize($imagePath));
         fclose($fp_image);
         return $image;
     }
+
 
 
 
