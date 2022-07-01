@@ -58,10 +58,9 @@ class DetectingFaceController extends Controller
             return response()->json(
                 ["data" => "no se encontró coincidencia"],
                 Response::HTTP_BAD_REQUEST);
-                
             endif;
-        else: 
-            
+
+        else:            
             return response()->json(
                 $request,
                  Response::HTTP_BAD_REQUEST);
@@ -115,9 +114,5 @@ class DetectingFaceController extends Controller
         fclose($fp_image);
         return $image;
     }
-
-
-
-
 
 }
